@@ -43,13 +43,44 @@ const getBankBalanceList = async (
 };
 
 const getIBCDenomTraces = async (lcdBaseURL: string, denom: string): Promise<string> => {
-  const resp = await axios.get(`${lcdBaseURL}/ibc/apps/transfer/v1/denom_traces/${denom.slice(4)}`);
-  return `${resp.data.denom_trace.path}/${resp.data.denom_trace.base_denom}`;
+  const hash = denom.slice(4);
+  try {
+    // ibc-go v9+ (e.g. Crypto.org Chain v8 on ibc-go v10) only serves /denoms
+    const resp = await axios.get<{ denom: IBCDenom }>(
+      `${lcdBaseURL}/ibc/apps/transfer/v1/denoms/${hash}`,
+    );
+    const { base, trace } = resp.data.denom;
+    return [...trace.map((hop) => `${hop.port_id}/${hop.channel_id}`), base].join('/');
+  } catch {
+    // Fallback for chains still running ibc-go v8 or below
+  }
+  try {
+    const resp = await axios.get<{ denom_trace: IBCDenomTrace }>(
+      `${lcdBaseURL}/ibc/apps/transfer/v1/denom_traces/${hash}`,
+    );
+    return `${resp.data.denom_trace.path}/${resp.data.denom_trace.base_denom}`;
+  } catch {
+    // Do not fail the whole balance list because of a single unresolvable denom
+    return denom;
+  }
 };
 
 type BankBalance = {
   amount: string;
   denom: string;
+};
+
+type IBCDenom = {
+  base: string;
+  trace: {
+    port_id: string;
+    channel_id: string;
+  }[];
+};
+
+type IBCDenomTrace = {
+  path: string;
+  base_denom: string;
 };
 
 export { getAccountCoinList };
