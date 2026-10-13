@@ -37,6 +37,10 @@ npm run start
 npm run build
 ```
 
+### Deployment
+
+The app is deployed to https://cronos-labs.github.io/keplr-web-wallet/ by the [Build and Deploy to GitHub Page](./.github/workflows/githubpage.yaml) workflow. It runs on every push to `master` and can also be run manually from the Actions tab. The workflow publishes the build output to the `gh-pages` branch, so GitHub Pages must be set to deploy from the `gh-pages` branch.
+
 ## License
 
 [MIT License](./LICENSE)
