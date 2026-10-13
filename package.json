@@ -6,7 +6,7 @@
     "url": "https://github.com/calvinaco"
   },
   "license": "MIT",
-  "homepage": "http://calvinaco.github.io/keplr-web-wallet",
+  "homepage": "https://cronos-labs.github.io/keplr-web-wallet",
   "dependencies": {
     "@babel/core": "7.16.0",
     "@cosmjs/stargate": "0.36.0",
